@@ -70,31 +70,28 @@ def scan_ip(ip):
 
 
 def main():
-    
-    excel_path = "your_csv_path"
-    output_csv = "your results saved to the this path"
+    csv_path = "Path of your csv file to be read (your domain names are here)"
+    output_excel = "your/path/result.xlsx"
 
-   
-    try:
-        df = pd.read_excel(excel_path)
-    except Exception as e:
-        print(f"[X] CSV file couldnt read: {e}")
-        return
+    df = pd.read_csv(csv_path)
+    print("Columns found:", df.columns.tolist())
 
     all_results = []
-
-  
     for idx, row in tqdm(df.iterrows(), total=len(df), desc="Scanning IP's"):
         ip = str(row.get("Alias")).strip()
-      
-        if ip and ip.lower() != "Couldn't resolved":
-            ip_results = scan_ip(ip)
-            all_results.extend(ip_results)
+        print("Scanning IP:", ip)
+        if ip and ip.lower() != "couldn't resolved":
+            results = scan_ip(ip)
+            print(f"  -> Found {len(results)} hits for {ip}")
+            all_results.extend(results)
 
+    print("Total hits overall:", len(all_results))
 
     result_df = pd.DataFrame(all_results)
-    result_df.to_csv(output_csv, index=False, encoding="utf-8-sig")
-    print(f"[✓] Results saved {output_csv}")
+    result_df.to_csv(output_excel, index=False, engine="openpyxl")
+    print(f"[✓] Results saved to {output_excel}")
+
+
 
 
 if __name__ == "__main__":
